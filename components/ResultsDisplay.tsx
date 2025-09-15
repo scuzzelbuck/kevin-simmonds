@@ -52,7 +52,7 @@ const ResultCard: React.FC<{ result: RestorationResult, onUseAsSource: (imageUrl
         <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
                 <div>
-                    <h3 className="text-center font-bold p-2 bg-gray-700 text-gray-300">Original</h3>
+                    <h3 className="text-center font-bold p-2 bg-gray-700 text-white">Original</h3>
                     <img src={result.originalUrl} alt="Original" className="w-full h-auto object-contain" />
                 </div>
                 <div className="relative flex flex-col">
@@ -61,7 +61,7 @@ const ResultCard: React.FC<{ result: RestorationResult, onUseAsSource: (imageUrl
                            <button 
                              key={index}
                              onClick={() => setActiveTab(index)}
-                             className={`flex-1 font-bold p-2 text-center transition-colors ${activeTab === index ? 'bg-indigo-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'}`}
+                             className={`flex-1 font-bold p-2 text-center transition-colors ${activeTab === index ? 'bg-indigo-600 text-white' : 'bg-gray-700 text-gray-200 hover:bg-gray-600'}`}
                            >
                             Output {index + 1}
                            </button>
@@ -84,8 +84,8 @@ const ResultCard: React.FC<{ result: RestorationResult, onUseAsSource: (imageUrl
                 </div>
             </div>
             <div className="p-4 bg-gray-700/50">
-                <p className="text-xs text-gray-400"><strong>Prompt:</strong> {result.prompt}</p>
-                {result.modelText && <p className="text-xs text-gray-400 mt-1"><strong>Model Note:</strong> {result.modelText}</p>}
+                <p className="text-xs text-gray-300"><strong>Prompt:</strong> {result.prompt}</p>
+                {result.modelText && <p className="text-xs text-gray-300 mt-1"><strong>Model Note:</strong> {result.modelText}</p>}
             </div>
         </div>
     );
@@ -99,7 +99,7 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ results, onUseAs
 
   return (
     <div className="w-full mt-8">
-      <h2 className="text-2xl font-bold mb-4 text-center text-gray-300">Restoration Results</h2>
+      <h2 className="text-2xl font-bold mb-4 text-center text-white">Restoration Results</h2>
       <div className="space-y-6">
         {results.map(result => (
           <ResultCard key={result.id} result={result} onUseAsSource={onUseAsSource} />

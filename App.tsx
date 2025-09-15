@@ -104,7 +104,7 @@ const App: React.FC = () => {
 
 
   return (
-    <div className="min-h-screen bg-slate-900 text-gray-100 flex flex-col items-center p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen flex flex-col items-center p-4 sm:p-6 lg:p-8">
         <HistoryGallery isOpen={isHistoryOpen} onClose={() => setIsHistoryOpen(false)} history={history} onDelete={deleteFromHistory} />
         
         <header className="w-full max-w-4xl mb-6 flex justify-between items-center">
@@ -141,7 +141,7 @@ const App: React.FC = () => {
             multiple={false}
           />
           <div>
-            <label className="block text-sm font-medium text-gray-400 mb-2">3. Describe the Restoration</label>
+            <label className="block text-sm font-medium text-gray-200 mb-2">3. Describe the Restoration</label>
             <PromptManager
                 prompt={prompt}
                 setPrompt={setPrompt}
@@ -189,7 +189,7 @@ const App: React.FC = () => {
         <ResultsDisplay results={currentResults} onUseAsSource={handleUseAsSource} />
       </main>
 
-      <footer className="w-full max-w-4xl mt-8 text-center text-gray-500 text-sm">
+      <footer className="w-full max-w-4xl mt-8 text-center text-gray-300 text-sm">
         <p>Powered by Google's Gemini API. All data is stored locally in your browser.</p>
       </footer>
     </div>

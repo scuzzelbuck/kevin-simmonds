@@ -82,7 +82,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ id, label, files, 
 
   return (
     <div className="w-full">
-      <label htmlFor={id} className="block text-sm font-medium text-gray-400 mb-2">{label}</label>
+      <label htmlFor={id} className="block text-sm font-medium text-gray-200 mb-2">{label}</label>
       <div className="flex flex-col sm:flex-row items-stretch justify-center w-full gap-2">
         <label
           htmlFor={id}
@@ -90,10 +90,10 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ id, label, files, 
         >
           <div className="flex flex-col items-center justify-center pt-5 pb-6 px-2 text-center">
             <Icon className="w-8 h-8 mb-4 text-gray-500" />
-            <p className="mb-2 text-sm text-gray-500">
+            <p className="mb-2 text-sm text-gray-300">
               <span className="font-semibold">Click to upload</span> or drag and drop
             </p>
-            <p className="text-xs text-gray-500">{multiple ? `Up to ${maxFiles} images` : 'A single reference image'}</p>
+            <p className="text-xs text-gray-400">{multiple ? `Up to ${maxFiles} images` : 'A single reference image'}</p>
           </div>
           <input ref={fileInputRef} id={id} type="file" className="hidden" multiple={multiple} accept="image/*" onChange={handleFileChange} />
         </label>
@@ -104,7 +104,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ id, label, files, 
           aria-label="Use camera to take a photo"
         >
             <CameraIcon className="w-8 h-8 mb-2 text-gray-500" />
-            <span className="text-sm text-gray-500 font-semibold">Use Camera</span>
+            <span className="text-sm text-gray-300 font-semibold">Use Camera</span>
         </button>
       </div>
 

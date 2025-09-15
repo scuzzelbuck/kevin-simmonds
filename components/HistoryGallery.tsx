@@ -17,8 +17,8 @@ export const HistoryGallery: React.FC<HistoryGalleryProps> = ({ history, isOpen,
     <div className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50 p-4">
       <div className="bg-gray-800 rounded-lg shadow-xl w-full max-w-6xl h-full max-h-[90vh] flex flex-col">
         <div className="flex justify-between items-center p-4 border-b border-gray-700">
-          <h2 className="text-xl font-bold text-gray-200">Restoration History</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-white">
+          <h2 className="text-xl font-bold text-white">Restoration History</h2>
+          <button onClick={onClose} className="text-gray-300 hover:text-white">
             <CloseIcon className="w-6 h-6" />
           </button>
         </div>
@@ -43,7 +43,7 @@ export const HistoryGallery: React.FC<HistoryGalleryProps> = ({ history, isOpen,
             </div>
           </div>
         ) : (
-            <div className="flex-grow flex flex-col justify-center items-center text-gray-500">
+            <div className="flex-grow flex flex-col justify-center items-center text-gray-300">
                 <p>No restorations saved yet.</p>
                 <p className="text-sm">Your saved results will appear here.</p>
             </div>
