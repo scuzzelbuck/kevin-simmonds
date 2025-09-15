@@ -1,0 +1,5 @@
+{
+  "name": "Nano Banana Photo Restorer",
+  "description": "An advanced photo restoration application using Gemini's 'gemini-2.5-flash-image-preview' model. It supports batch processing, prompt management, and the use of reference images for style transfer.",
+  "requestFramePermissions": []
+}
