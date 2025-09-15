@@ -28,7 +28,7 @@ export const HistoryGallery: React.FC<HistoryGalleryProps> = ({ history, isOpen,
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {history.sort((a,b) => b.timestamp - a.timestamp).map(item => (
                 <div key={item.id} className="group relative bg-gray-900 rounded-lg overflow-hidden">
-                  <img src={item.restoredUrl} alt="Restored" className="w-full h-48 object-cover" />
+                  <img src={item.restoredUrls[0]} alt="Restored" className="w-full h-48 object-cover" />
                   <div className="absolute inset-0 bg-black bg-opacity-70 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-2">
                     <p className="text-white text-xs line-clamp-3">{item.prompt}</p>
                   </div>

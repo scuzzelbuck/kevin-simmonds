@@ -1,5 +1,4 @@
-
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import type { ImageFile, RestorationResult } from './types';
 import { restoreImage } from './services/geminiService';
@@ -11,6 +10,7 @@ import { WandIcon, HistoryIcon } from './components/icons';
 
 const App: React.FC = () => {
   const [sourceImages, setSourceImages] = useState<ImageFile[]>([]);
+  const [activeImageId, setActiveImageId] = useState<string>('');
   const [referenceImage, setReferenceImage] = useState<ImageFile[]>([]);
   const [prompt, setPrompt] = useState<string>('');
   const [savedPrompts, setSavedPrompts] = useLocalStorage<string[]>('saved-prompts', []);
@@ -23,6 +23,17 @@ const App: React.FC = () => {
 
   const [isHistoryOpen, setIsHistoryOpen] = useState(false);
 
+  useEffect(() => {
+    // Set initial active image when source images are first loaded or changed.
+    if (sourceImages.length > 0 && !sourceImages.find(f => f.id === activeImageId)) {
+        const originalImage = sourceImages.find(f => f.isOriginal);
+        setActiveImageId(originalImage ? originalImage.id : sourceImages[0].id);
+    } else if (sourceImages.length === 0) {
+        setActiveImageId('');
+    }
+  }, [sourceImages]);
+
+
   const handleSavePrompt = () => {
     if (prompt && !savedPrompts.includes(prompt)) {
       setSavedPrompts([...savedPrompts, prompt]);
@@ -32,10 +43,31 @@ const App: React.FC = () => {
   const deleteFromHistory = (id: string) => {
     setHistory(history.filter(item => item.id !== id));
   };
+
+  const handleUseAsSource = async (imageUrl: string) => {
+    try {
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
+      const file = new File([blob], `generated-source-${Date.now()}.png`, { type: blob.type });
+      const newImageFile: ImageFile = {
+        id: `source-${file.name}-${Date.now()}`,
+        file,
+        previewUrl: URL.createObjectURL(file),
+        isOriginal: false,
+      };
+      setSourceImages(prev => [...prev, newImageFile]);
+      setActiveImageId(newImageFile.id); // Set the new image as active
+    } catch (e) {
+      console.error("Failed to create file from data URL", e);
+      setError("Could not use the generated image as a new source.");
+    }
+  };
   
   const handleRestore = useCallback(async () => {
-    if (sourceImages.length === 0 || !prompt) {
-      setError("Please upload at least one image and provide a prompt.");
+    const activeImage = sourceImages.find(img => img.id === activeImageId);
+
+    if (!activeImage || !prompt) {
+      setError("Please select an image to restore and provide a prompt.");
       return;
     }
 
@@ -45,43 +77,40 @@ const App: React.FC = () => {
     setProgress(0);
 
     const newResults: RestorationResult[] = [];
-    const totalImages = sourceImages.length;
+    
+    try {
+        const resultData = await restoreImage(activeImage.file, prompt, referenceImage[0]?.file || null);
+        const newResult: RestorationResult = {
+            ...resultData,
+            id: `result-${Date.now()}`,
+            originalUrl: activeImage.previewUrl,
+            timestamp: Date.now(),
+        };
+        newResults.push(newResult);
+        setCurrentResults([newResult]);
 
-    for (let i = 0; i < totalImages; i++) {
-        const imageFile = sourceImages[i];
-        try {
-            const resultData = await restoreImage(imageFile.file, prompt, referenceImage[0]?.file || null);
-            const newResult: RestorationResult = {
-                ...resultData,
-                id: `result-${Date.now()}-${i}`,
-                originalUrl: imageFile.previewUrl,
-                timestamp: Date.now(),
-            };
-            newResults.push(newResult);
-            setCurrentResults([...newResults]);
-        } catch (e) {
-            console.error(`Failed to process image ${imageFile.file.name}:`, e);
-            const errorMessage = e instanceof Error ? e.message : 'An unknown error occurred.';
-            setError(`Failed on image ${i + 1}/${totalImages}: ${errorMessage}`);
-            setIsLoading(false);
-            return;
-        }
-        setProgress(((i + 1) / totalImages) * 100);
+    } catch (e) {
+        console.error(`Failed to process image ${activeImage.file.name}:`, e);
+        const errorMessage = e instanceof Error ? e.message : 'An unknown error occurred.';
+        setError(`Failed to restore image: ${errorMessage}`);
+        setIsLoading(false);
+        return;
     }
     
+    setProgress(100);
     setHistory(prev => [...newResults, ...prev]);
     setIsLoading(false);
-  }, [sourceImages, prompt, referenceImage, setHistory]);
+  }, [sourceImages, activeImageId, prompt, referenceImage, setHistory]);
 
 
   return (
-    <div className="min-h-screen bg-gray-900 text-gray-100 flex flex-col items-center p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen bg-slate-900 text-gray-100 flex flex-col items-center p-4 sm:p-6 lg:p-8">
         <HistoryGallery isOpen={isHistoryOpen} onClose={() => setIsHistoryOpen(false)} history={history} onDelete={deleteFromHistory} />
         
         <header className="w-full max-w-4xl mb-6 flex justify-between items-center">
             <div className="flex items-center space-x-3">
                 <WandIcon className="w-8 h-8 text-indigo-400"/>
-                <h1 className="text-3xl font-bold tracking-tight text-white">Nano Banana Photo Restorer</h1>
+                <h1 className="text-3xl font-bold tracking-tight text-white">KevBuy AI</h1>
             </div>
             <button
                 onClick={() => setIsHistoryOpen(true)}
@@ -96,11 +125,13 @@ const App: React.FC = () => {
         <div className="space-y-6">
           <ImageUploader 
             id="source-images" 
-            label="1. Upload Images to Restore (up to 10)" 
+            label="1. Upload Image or Use a Generated One" 
             files={sourceImages}
             onFilesChange={setSourceImages}
             multiple={true}
             maxFiles={10}
+            activeImageId={activeImageId}
+            setActiveImageId={setActiveImageId}
           />
           <ImageUploader
             id="reference-image"
@@ -155,7 +186,7 @@ const App: React.FC = () => {
           )}
         </div>
         
-        <ResultsDisplay results={currentResults} />
+        <ResultsDisplay results={currentResults} onUseAsSource={handleUseAsSource} />
       </main>
 
       <footer className="w-full max-w-4xl mt-8 text-center text-gray-500 text-sm">
